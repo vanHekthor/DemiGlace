@@ -1,4 +1,4 @@
-package javaparser;
+package demiglace.javaparser;
 
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ast.CompilationUnit;
@@ -15,8 +15,6 @@ import com.github.javaparser.utils.SourceRoot;
 import javassist.CtMethod;
 import org.objectweb.asm.Type;
 
-import javax.swing.*;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

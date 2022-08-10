@@ -1,7 +1,6 @@
-package profilerparser;
+package demiglace.profilerparser;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -16,7 +15,7 @@ import java.io.IOException;
 
 public class JProfilerParser {
 
-    public static Node parseProfilerXML(String filePath) {
+    public Node parseProfilerXML(String filePath) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newDefaultInstance();
 
         try {
@@ -31,8 +30,10 @@ public class JProfilerParser {
 
             XPathFactory xPathfactory = XPathFactory.newInstance();
             XPath xpath = xPathfactory.newXPath();
-            XPathExpression expr = xpath.compile("//node[@class=\"main.java.Catena\" and @methodName=\"catena\"]");
+            XPathExpression expr = xpath.compile("//node[@class=\"main.java.Catena\"]");
             Node node = (Node) expr.evaluate(doc, XPathConstants.NODE);
+
+            printTree(node, 0);
 
             return node;
 

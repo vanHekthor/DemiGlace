@@ -1,19 +1,25 @@
-import callgraph.GraphBuilder;
-import javaparser.JavaParsingResult;
-import javaparser.JavaProjectParser;
+package demiglace;
+
+import demiglace.callgraph.GraphBuilder;
+import demiglace.javaparser.JavaParsingResult;
+import demiglace.javaparser.JavaProjectParser;
 import org.w3c.dom.Node;
-import profilerparser.JProfilerParser;
+import demiglace.profilerparser.JProfilerParser;
 
 import javax.swing.*;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class DemiGlace {
 
+    public static Path PROJECT_PATH;
     public static void main(String[] args) {
         JavaProjectParser javaProjectParser = new JavaProjectParser();
-        JavaParsingResult pr = javaProjectParser.parseProject(openDirFileChooser().toPath());
+        PROJECT_PATH = Paths.get("C:\\Users\\qb19zexe\\Git\\catena-java");
+        JavaParsingResult pr = javaProjectParser.parseProject(PROJECT_PATH);
 
-        Node node = JProfilerParser.parseProfilerXML("C:\\Users\\Quoc Duong Bui\\Documents\\Arbeit\\WHK\\sopro-vr\\Tools\\control_flow\\profiler_data\\catena\\tree.xml");
+        Node node = new JProfilerParser().parseProfilerXML("C:\\Users\\qb19zexe\\Git\\sopro-vr\\Tools\\control_flow\\profiler_data\\catena\\tree.xml");
 
         GraphBuilder graphBuilder = new GraphBuilder();
         graphBuilder.generateCallGraphNodes(node, pr);

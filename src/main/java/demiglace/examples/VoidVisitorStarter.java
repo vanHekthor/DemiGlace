@@ -1,4 +1,4 @@
-package org.javaparser.examples;
+package demiglace.examples;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -16,7 +16,6 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeS
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 
 import java.io.File;
-import java.util.Optional;
 
 public class VoidVisitorStarter {
     private static final String FILE_PATH = "software_system_examples/Helper.java";

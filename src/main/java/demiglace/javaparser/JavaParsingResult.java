@@ -1,10 +1,9 @@
-package javaparser;
+package demiglace.javaparser;
 
 import com.github.javaparser.utils.SourceRoot;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 public class JavaParsingResult {
     private List<SourceRoot> sourceRoots;
