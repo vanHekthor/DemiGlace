@@ -26,8 +26,8 @@ import java.util.List;
 
 public class JavaProjectParser {
 
-    public ParsingResult parseProject(Path path) {
-        ParsingResult parsingResult = new ParsingResult();
+    public JavaParsingResult parseProject(Path path) {
+        JavaParsingResult parsingResult = new JavaParsingResult();
         ProjectRoot projectRoot = new SymbolSolverCollectionStrategy().collect(path);
 
         parsingResult.setSourceRoots(projectRoot.getSourceRoots());

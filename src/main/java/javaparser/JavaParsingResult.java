@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-public class ParsingResult {
+public class JavaParsingResult {
     private List<SourceRoot> sourceRoots;
     private HashMap<String, List<ResolvedMethodCall>> methodMap;
 
