@@ -13,4 +13,12 @@ public class Region {
         this.file = file;
         this.lines = lines;
     }
+
+    @Override
+    public String toString() {
+        return "Region{" +
+                "file='" + file + '\'' +
+                ", lines=" + lines +
+                '}';
+    }
 }

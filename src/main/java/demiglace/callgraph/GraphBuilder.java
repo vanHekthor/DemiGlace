@@ -97,6 +97,7 @@ public class GraphBuilder {
 
         String qualifiedParentName = parentNode.getAttributes().getNamedItem("class").getNodeValue()
                 + "." + parentNode.getAttributes().getNamedItem("methodName").getNodeValue();
+        String qualifiedParentClassName = parentNode.getAttributes().getNamedItem("class").getNodeValue();
         String parentDescriptor = parentNode.getAttributes().getNamedItem("methodSignature").getNodeValue();
 
         String methodCallName = childNode.getAttributes().getNamedItem("methodName").getNodeValue();
@@ -106,7 +107,7 @@ public class GraphBuilder {
 
         List<ResolvedMethodCall> methodCalls = methodMap.get(qualifiedParentName + parentDescriptor);
         if (methodCalls.size() == 1) {
-            matched.add(createCallGraphEdge(qualifiedParentName, methodCalls.get(0)));
+            matched.add(createCallGraphEdge(qualifiedParentClassName, methodCalls.get(0)));
         } else if (methodCalls.size() > 1) {
 
             // filter by method name
@@ -115,7 +116,7 @@ public class GraphBuilder {
             }).collect(Collectors.toList());
 
             if (filteredByName.size() == 1) {
-                matched.add(createCallGraphEdge(qualifiedParentName, filteredByName.get(0)));
+                matched.add(createCallGraphEdge(qualifiedParentClassName, filteredByName.get(0)));
             }
 
             // filter by method declaration qualified name and method descriptor
@@ -125,7 +126,7 @@ public class GraphBuilder {
             }).collect(Collectors.toList());
 
             for (ResolvedMethodCall call : filteredByQualiNameAndDesc) {
-                matched.add(createCallGraphEdge(qualifiedParentName, call));
+                matched.add(createCallGraphEdge(qualifiedParentClassName, call));
             }
 
             // remove calls with method declaration qualified name and method descriptor
@@ -141,7 +142,7 @@ public class GraphBuilder {
                             .collect(Collectors.toList());
 
             for (ResolvedMethodCall call : filteredByInterfaceImplementation) {
-                matched.add(createCallGraphEdge(qualifiedParentName, call));
+                matched.add(createCallGraphEdge(qualifiedParentClassName, call));
             }
         }
 

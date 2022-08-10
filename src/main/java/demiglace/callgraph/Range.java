@@ -8,4 +8,12 @@ public class Range {
         this.from = from;
         this.to = to;
     }
+
+    @Override
+    public String toString() {
+        return "Range{" +
+                "from=" + from +
+                ", to=" + to +
+                '}';
+    }
 }
