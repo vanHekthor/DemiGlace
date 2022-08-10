@@ -16,7 +16,7 @@ import java.io.IOException;
 
 public class JProfilerParser {
 
-    public Node parseProfilerXML(String filePath) {
+    public static Node parseProfilerXML(String filePath) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newDefaultInstance();
 
         try {
@@ -42,7 +42,7 @@ public class JProfilerParser {
         return null;
     }
 
-    private void printTree(Node node, int depth) {
+    private static void printTree(Node node, int depth) {
         // do something with the current node instead of System.out
         String prefix = "n";
         if ((node.getAttributes().getNamedItem("class") != null)
