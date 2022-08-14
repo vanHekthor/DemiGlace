@@ -22,6 +22,7 @@ import javassist.CtMethod;
 import org.objectweb.asm.Type;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -31,34 +32,102 @@ import java.util.stream.Collectors;
 
 public class JavaProjectParser {
 
-    public static Set<String> resolveAncestorTypes(String qualifiedClassName) {
+    public static Set<String> resolveAncestorTypes(String qualifiedClassName) throws IllegalStateException {
         Set<String> ancestorSet = new HashSet<>();
         ProjectRoot projectRoot = new SymbolSolverCollectionStrategy().collect(DemiGlace.PROJECT_PATH);
 
         for (SourceRoot sourceRoot : projectRoot.getSourceRoots()) {
             sourceRoot.getParserConfiguration().setAttributeComments(false); // Ignore comments
 
+            String classPath = sourceRoot.getRoot().toAbsolutePath() + "/"
+                    + qualifiedClassName.replace('.', '/') + ".java";
+
             JavaParser parser = new JavaParser(sourceRoot.getParserConfiguration());
-            ParseResult<CompilationUnit> pr = parser.parse(qualifiedClassName.replace('.', '/'));
+            try {
+                ParseResult<CompilationUnit> pr = parser.parse(new File(classPath));
 
-            if (pr.getResult().isPresent()) {
-                CompilationUnit compilationUnit = pr.getResult().get();
-                List<ClassOrInterfaceDeclaration> cil =
-                        compilationUnit.findAll(ClassOrInterfaceDeclaration.class).stream().filter(cid -> {
-                            if (cid.getFullyQualifiedName().isPresent()) {
-                                return cid.getFullyQualifiedName().get().equals(qualifiedClassName);
-                            }
-                            return false;
-                        }).collect(Collectors.toList());
+                if (pr.getResult().isPresent()) {
+                    CompilationUnit compilationUnit = pr.getResult().get();
+                    List<ClassOrInterfaceDeclaration> cil =
+                            compilationUnit.findAll(ClassOrInterfaceDeclaration.class).stream().filter(cid -> {
+                                if (cid.getFullyQualifiedName().isPresent()) {
+                                    return cid.getFullyQualifiedName().get().equals(qualifiedClassName);
+                                }
+                                return false;
+                            }).collect(Collectors.toList());
 
-                if (cil.size() == 1){
-                    ancestorSet = cil.get(0).resolve().getAllAncestors()
-                            .stream().map(ResolvedReferenceType::getQualifiedName)
-                            .collect(Collectors.toSet());
+                    if (cil.size() == 1) {
+                        ancestorSet = cil.get(0).resolve().getAllAncestors()
+                                .stream().map(ResolvedReferenceType::getQualifiedName)
+                                .collect(Collectors.toSet());
+                        return ancestorSet;
+                    }
+
+                    // TODO: handle cases where multiple classes with the same qualified name but with
+                    //  different source roots exist
+                    if (cil.size() > 1) {
+                        throw new IllegalStateException("Multiple classes have the same fully qualified name: "
+                                + qualifiedClassName + " inside "
+                                + qualifiedClassName.replace('.', '/') + ".java");
+                    }
                 }
+            } catch (FileNotFoundException e) {
+                System.err.println("[resolveAncestorTypes] The file " + classPath + " does not exist!");
             }
         }
+        // return empty set
         return ancestorSet;
+    }
+
+    public static FullyResolvedMethodDeclaration findMethodDeclaration(String qualifiedMethodName, String methodDescriptor) {
+        ProjectRoot projectRoot = new SymbolSolverCollectionStrategy().collect(DemiGlace.PROJECT_PATH);
+
+        for (SourceRoot sourceRoot : projectRoot.getSourceRoots()) {
+            sourceRoot.getParserConfiguration().setAttributeComments(false); // Ignore comments
+
+            JavaParser parser = new JavaParser(sourceRoot.getParserConfiguration());
+
+            String[] qualifiedClassNameArray = Arrays.copyOf(
+                    qualifiedMethodName.split("\\."),
+                    qualifiedMethodName.split("\\.").length - 1);
+
+            String qualifiedClassName = String.join("/", qualifiedClassNameArray);
+            String classPath = sourceRoot.getRoot().toAbsolutePath() + "/"
+                    + qualifiedClassName + ".java";
+
+            try {
+                ParseResult<CompilationUnit> pr = parser.parse(new File(classPath));
+
+                if (pr.getResult().isPresent()) {
+                    CompilationUnit compilationUnit = pr.getResult().get();
+                    List<MethodDeclaration> foundMethods =
+                            compilationUnit.findAll(MethodDeclaration.class).stream().filter(md -> {
+                                return md.resolve().getQualifiedName().equals(qualifiedMethodName);
+                            }).collect(Collectors.toList());
+
+                    // TODO: handle cases where multiple methods with the same qualified name but with
+                    //  different source roots exist
+                    if (foundMethods.size() == 1) {
+                        return new FullyResolvedMethodDeclaration(foundMethods.get(0), foundMethods.get(0).resolve());
+
+                    } else if (foundMethods.size() > 1) {
+                        foundMethods = foundMethods.stream().filter(methodDeclaration -> {
+                            return methodDeclaration.toDescriptor().equals(methodDescriptor);
+                        }).toList();
+
+                        if (foundMethods.size() == 1) {
+                            return new FullyResolvedMethodDeclaration(foundMethods.get(0), foundMethods.get(0).resolve());
+                        }
+
+                        // throw exception
+                    }
+                }
+            } catch (FileNotFoundException e) {
+                System.err.println("[findMethodDeclaration] The file " + classPath + " does not exist!");
+            }
+        }
+        //throw exception
+        return null;
     }
 
     public JavaParsingResult parseProject(Path path) {

@@ -27,6 +27,12 @@ public class ResolvedMethodCall {
         this.descriptor = descriptor;
     }
 
+    public void updateValues(FullyResolvedMethodDeclaration fullyResolvedMethodDeclaration) {
+        methodDeclaration = fullyResolvedMethodDeclaration.getMethodDeclaration();
+        resolvedMethodDeclaration = fullyResolvedMethodDeclaration.getResolvedMethodDeclaration();
+        descriptor = methodDeclaration.toDescriptor();
+    }
+
     public String getName() {
         return expression.getNameAsString();
     }
@@ -37,6 +43,10 @@ public class ResolvedMethodCall {
 
     public MethodDeclaration getMethodDeclaration() {
         return methodDeclaration;
+    }
+
+    public void setMethodDeclaration(MethodDeclaration methodDeclaration) {
+        this.methodDeclaration = methodDeclaration;
     }
 
     public ResolvedMethodDeclaration getResolvedMethodDeclaration() {

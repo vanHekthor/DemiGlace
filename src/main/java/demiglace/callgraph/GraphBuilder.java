@@ -1,5 +1,7 @@
 package demiglace.callgraph;
 
+import com.github.javaparser.ast.body.MethodDeclaration;
+import demiglace.javaparser.FullyResolvedMethodDeclaration;
 import demiglace.javaparser.JavaParsingResult;
 import demiglace.javaparser.JavaProjectParser;
 import demiglace.javaparser.ResolvedMethodCall;
@@ -101,13 +103,19 @@ public class GraphBuilder {
         String parentDescriptor = parentNode.getAttributes().getNamedItem("methodSignature").getNodeValue();
 
         String methodCallName = childNode.getAttributes().getNamedItem("methodName").getNodeValue();
-        String qualifiedChildNodeName = parentNode.getAttributes().getNamedItem("class").getNodeValue()
-                + "." + methodCallName;
+        String qualifiedChildNodeClassName = childNode.getAttributes().getNamedItem("class").getNodeValue();
+        String qualifiedChildNodeMethodName = qualifiedChildNodeClassName + "." + methodCallName;
         String methodCallDescriptor = childNode.getAttributes().getNamedItem("methodSignature").getNodeValue();
 
         List<ResolvedMethodCall> methodCalls = methodMap.get(qualifiedParentName + parentDescriptor);
         if (methodCalls.size() == 1) {
-            matched.add(createCallGraphEdge(qualifiedParentClassName, methodCalls.get(0)));
+            try {
+                updateResolvedMethodCall(methodCalls.get(0), qualifiedChildNodeMethodName, methodCallDescriptor);
+                matched.add(createCallGraphEdge(qualifiedParentClassName, methodCalls.get(0)));
+            } catch (Exception e) {
+                System.err.println("Method declaration " + qualifiedChildNodeMethodName + methodCallDescriptor
+                        + " not found in source code!");
+            }
         } else if (methodCalls.size() > 1) {
 
             // filter by method name
@@ -116,23 +124,37 @@ public class GraphBuilder {
             }).collect(Collectors.toList());
 
             if (filteredByName.size() == 1) {
-                matched.add(createCallGraphEdge(qualifiedParentClassName, filteredByName.get(0)));
+                // if (filteredByName.get(0).getMethodDeclaration() !=null)
+                try {
+                    updateResolvedMethodCall(filteredByName.get(0), qualifiedChildNodeMethodName, methodCallDescriptor);
+                    matched.add(createCallGraphEdge(qualifiedParentClassName, filteredByName.get(0)));
+                } catch (Exception e) {
+                    System.err.println("Method declaration " + qualifiedChildNodeMethodName + methodCallDescriptor
+                            + " not found in source code!");
+                }
             }
 
             // filter by method declaration qualified name and method descriptor
             List<ResolvedMethodCall> filteredByQualiNameAndDesc = filteredByName.stream().filter(call -> {
-                return call.getResolvedMethodDeclaration().getQualifiedName().equals(qualifiedChildNodeName)
+                return call.getResolvedMethodDeclaration().getQualifiedName().equals(qualifiedChildNodeMethodName)
                         && call.getDescriptor().equals(methodCallDescriptor);
             }).collect(Collectors.toList());
 
             for (ResolvedMethodCall call : filteredByQualiNameAndDesc) {
-                matched.add(createCallGraphEdge(qualifiedParentClassName, call));
+//                if (call.getMethodDeclaration() != null)
+                try {
+                    updateResolvedMethodCall(call, qualifiedChildNodeMethodName, methodCallDescriptor);
+                    matched.add(createCallGraphEdge(qualifiedParentClassName, call));
+                } catch (Exception e) {
+                    System.err.println("Method declaration " + qualifiedChildNodeMethodName + methodCallDescriptor
+                            + " not found in source code!");
+                }
             }
 
             // remove calls with method declaration qualified name and method descriptor
             // filter by checking if interface/abstract method is implemented
             List<ResolvedMethodCall> filteredOutNameAndDesc = filteredByName.stream().filter(call -> {
-                return !call.getResolvedMethodDeclaration().getQualifiedName().equals(qualifiedChildNodeName)
+                return !call.getResolvedMethodDeclaration().getQualifiedName().equals(qualifiedChildNodeMethodName)
                         || !call.getDescriptor().equals(methodCallDescriptor);
             }).collect(Collectors.toList());
 
@@ -142,11 +164,29 @@ public class GraphBuilder {
                             .collect(Collectors.toList());
 
             for (ResolvedMethodCall call : filteredByInterfaceImplementation) {
-                matched.add(createCallGraphEdge(qualifiedParentClassName, call));
+                FullyResolvedMethodDeclaration fullyResolvedMethodDeclaration =
+                        JavaProjectParser.findMethodDeclaration(qualifiedChildNodeMethodName, methodCallDescriptor);
+
+                if (fullyResolvedMethodDeclaration != null)
+                    call.updateValues(fullyResolvedMethodDeclaration);
+
+                if (call.getMethodDeclaration() != null)
+                    matched.add(createCallGraphEdge(qualifiedParentClassName, call));
             }
         }
 
         return matched;
+    }
+
+    private void updateResolvedMethodCall(ResolvedMethodCall rmc, String qualifiedMethodName, String methodCallDescriptor) throws Exception {
+        if (rmc.getMethodDeclaration() == null) {
+            throw new Exception();
+        }
+        FullyResolvedMethodDeclaration fullyResolvedMethodDeclaration =
+                JavaProjectParser.findMethodDeclaration(qualifiedMethodName, methodCallDescriptor);
+
+        if (fullyResolvedMethodDeclaration != null)
+            rmc.updateValues(fullyResolvedMethodDeclaration);
     }
 
     private CallGraphEdge createCallGraphEdge(String qualifiedClassName, ResolvedMethodCall rmc) {
@@ -171,15 +211,17 @@ public class GraphBuilder {
 
             int value = 1;
 
-            return new CallGraphEdge(type, label, from, to, value);
+            CallGraphEdge callGraphEdge = new CallGraphEdge(type, label, from, to, value);
+            System.out.println(callGraphEdge);
+            return callGraphEdge;
         }
+        System.err.println(rmc.getMethodDeclaration());
         return null;
     }
 
     private boolean checkIfInterfaceIsImplemented(Node node, ResolvedMethodCall resolvedMethodCall) {
         if (resolvedMethodCall.getMethodDeclaration() != null) {
-            String qualifiedNodeClassName = node.getAttributes().getNamedItem("class").getNodeValue()
-                    + "." + node.getAttributes().getNamedItem("methodName").getNodeValue();
+            String qualifiedNodeClassName = node.getAttributes().getNamedItem("class").getNodeValue();
 
             if (resolvedMethodCall.getMethodDeclaration().getParentNode().isPresent()) {
                 return JavaProjectParser.resolveAncestorTypes(qualifiedNodeClassName)
