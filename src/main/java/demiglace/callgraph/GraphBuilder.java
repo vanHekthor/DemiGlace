@@ -19,13 +19,11 @@ public class GraphBuilder {
     private HashMap<String, List<ResolvedMethodCall>> methodMap;
     private List<CallGraphEdge> matchedCallGraphEdges;
 
-    public void generateCallGraphNodes(Node node, JavaParsingResult pr) {
+    public List<CallGraphEdge> generateCallGraphNodes(Node node, JavaParsingResult pr) {
         methodMap = pr.getMethodMap();
         traverseTree(node);
 
-        for (CallGraphEdge cge : matchedCallGraphEdges) {
-            System.out.println(cge);
-        }
+        return matchedCallGraphEdges;
     }
 
     private void traverseTree(Node node) {
