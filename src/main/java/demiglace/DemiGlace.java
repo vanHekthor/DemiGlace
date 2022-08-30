@@ -30,11 +30,8 @@ public class DemiGlace {
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-        for (CallGraphEdge cge : edgeList) {
-            System.out.print(gson.toJson(cge));
-            System.out.println(",");
-        }
-
+        ParsingResult parsingResult = new ParsingResult(edgeList);
+        System.out.println(gson.toJson(parsingResult));
     }
 
     private static File openDirFileChooser() {
