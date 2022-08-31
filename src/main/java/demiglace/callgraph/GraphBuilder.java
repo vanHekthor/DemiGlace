@@ -9,17 +9,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.io.LineNumberReader;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GraphBuilder {
     private HashMap<String, List<ResolvedMethodCall>> methodMap;
-    private List<CallGraphEdge> matchedCallGraphEdges;
+    private HashSet<CallGraphEdge> matchedCallGraphEdges;
 
-    public List<CallGraphEdge> generateCallGraphNodes(Node node, JavaParsingResult pr) {
+    public HashSet<CallGraphEdge> generateCallGraphNodes(Node node, JavaParsingResult pr) {
         methodMap = pr.getMethodMap();
         traverseTree(node);
 
@@ -28,7 +25,7 @@ public class GraphBuilder {
 
     private void traverseTree(Node node) {
         if (matchedCallGraphEdges == null) {
-            matchedCallGraphEdges = new LinkedList<>();
+            matchedCallGraphEdges = new HashSet<>();
         }
 
         // if it is a node that properly references a method
@@ -197,19 +194,26 @@ public class GraphBuilder {
 
         int startLine = rmc.getExpression().getRange().get().begin.line;
         int endLine = rmc.getExpression().getRange().get().end.line;
+//        int startColumn = rmc.getExpression().getRange().get().begin.column;
+//        int endColumn = rmc.getExpression().getRange().get().end.column;
         String file = qualifiedClassName.replace('.', '/') + ".java";
 
         Region from = new Region(file, startLine, endLine);
+//        Region from = new Region(file, startLine, startColumn, endLine, endColumn);
 
         if (rmc.getMethodDeclaration() != null && rmc.getMethodDeclaration().getRange().isPresent()) {
             startLine = rmc.getMethodDeclaration().getRange().get().begin.line;
             endLine = rmc.getMethodDeclaration().getRange().get().end.line;
+//            startColumn = rmc.getMethodDeclaration().getRange().get().begin.column;
+//            endColumn = rmc.getMethodDeclaration().getRange().get().end.column;
+
             String[] qualifiedMethodName = rmc.getResolvedMethodDeclaration().getQualifiedName().split("\\.");
             String qualifiedName =
                     String.join("/", Arrays.copyOf(qualifiedMethodName, qualifiedMethodName.length - 1));
 
             file = qualifiedName + ".java";
             Region to = new Region(file, startLine, endLine);
+//            Region to = new Region(file, startLine, startColumn, endLine, endColumn);
 
             int value = 1;
 

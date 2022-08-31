@@ -113,7 +113,7 @@ public class JavaProjectParser {
                     } else if (foundMethods.size() > 1) {
                         foundMethods = foundMethods.stream().filter(methodDeclaration -> {
                             return methodDeclaration.toDescriptor().equals(methodDescriptor);
-                        }).toList();
+                        }).collect(Collectors.toList());
 
                         if (foundMethods.size() == 1) {
                             return new FullyResolvedMethodDeclaration(foundMethods.get(0), foundMethods.get(0).resolve());

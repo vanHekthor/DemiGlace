@@ -13,6 +13,7 @@ import javax.swing.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
 
 public class DemiGlace {
@@ -20,13 +21,13 @@ public class DemiGlace {
     public static Path PROJECT_PATH;
     public static void main(String[] args) {
         JavaProjectParser javaProjectParser = new JavaProjectParser();
-        PROJECT_PATH = Paths.get("C:\\Users\\qb19zexe\\Git\\catena-java");
+        PROJECT_PATH = Paths.get("C:\\Users\\Quoc Duong Bui\\Documents\\Arbeit\\WHK\\test_software\\catena-java");
         JavaParsingResult pr = javaProjectParser.parseProject(PROJECT_PATH);
 
-        Node node = new JProfilerParser().parseProfilerXML("C:\\Users\\qb19zexe\\Git\\sopro-vr\\Tools\\control_flow\\profiler_data\\catena\\tree.xml");
+        Node node = new JProfilerParser().parseProfilerXML("C:\\Users\\Quoc Duong Bui\\Documents\\Arbeit\\WHK\\sopro-vr\\Tools\\control_flow\\profiler_data\\catena\\tree.xml");
 
         GraphBuilder graphBuilder = new GraphBuilder();
-        List<CallGraphEdge> edgeList = graphBuilder.generateCallGraphNodes(node, pr);
+        HashSet<CallGraphEdge> edgeList = graphBuilder.generateCallGraphNodes(node, pr);
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 

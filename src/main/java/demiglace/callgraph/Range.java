@@ -1,19 +1,27 @@
 package demiglace.callgraph;
 
 public class Range {
-    private int from;
-    private int to;
+    private int start;
+    private int end;
 
-    public Range(int from, int to) {
-        this.from = from;
-        this.to = to;
+    public Range(int start, int end) {
+        this.start = start;
+        this.end = end;
+    }
+
+    public int getStart() {
+        return start;
+    }
+
+    public int getEnd() {
+        return end;
     }
 
     @Override
     public String toString() {
         return "Range{" +
-                "from=" + from +
-                ", to=" + to +
+                "from=" + start +
+                ", to=" + end +
                 '}';
     }
 }
