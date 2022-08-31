@@ -110,12 +110,14 @@ public class GraphBuilder {
             try {
                 updateResolvedMethodCall(methodCalls.get(0), qualifiedChildNodeMethodName, methodCallDescriptor);
                 matched.add(createCallGraphEdge(qualifiedParentClassName, methodCalls.get(0)));
+
+                return matched;
+
             } catch (Exception e) {
                 System.err.println("Method declaration " + qualifiedChildNodeMethodName + methodCallDescriptor
                         + " not found in source code!");
             }
         } else if (methodCalls.size() > 1) {
-
             // filter by method name
             List<ResolvedMethodCall> filteredByName = methodCalls.stream().filter(call -> {
                 return call.getName().equals(methodCallName);
@@ -130,6 +132,8 @@ public class GraphBuilder {
                     System.err.println("Method declaration " + qualifiedChildNodeMethodName + methodCallDescriptor
                             + " not found in source code!");
                 }
+
+                return matched;
             }
 
             // filter by method declaration qualified name and method descriptor
