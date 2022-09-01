@@ -39,12 +39,12 @@ public class CallGraphEdge {
                 this.to.getFile().equals(that.to.getFile()) &&
                 this.from.getLines().getStart() == that.from.getLines().getStart() &&
                 this.from.getLines().getEnd() == that.from.getLines().getEnd() &&
-//                this.from.getColumns().getStart() == that.from.getColumns().getStart() &&
-//                this.from.getColumns().getEnd() == that.from.getColumns().getEnd() &&
+                this.from.getColumns().getStart() == that.from.getColumns().getStart() &&
+                this.from.getColumns().getEnd() == that.from.getColumns().getEnd() &&
                 this.to.getLines().getStart() == that.to.getLines().getStart() &&
-                this.to.getLines().getEnd() == that.to.getLines().getEnd();
-//                this.to.getColumns().getStart() == that.to.getColumns().getStart() &&
-//                this.to.getColumns().getEnd() == that.to.getColumns().getEnd();
+                this.to.getLines().getEnd() == that.to.getLines().getEnd() &&
+                this.to.getColumns().getStart() == that.to.getColumns().getStart() &&
+                this.to.getColumns().getEnd() == that.to.getColumns().getEnd();
     }
 
     @Override
@@ -53,12 +53,12 @@ public class CallGraphEdge {
                 from.getFile(),
                 from.getLines().getStart(),
                 from.getLines().getEnd(),
-//                from.getColumns().getStart(),
-//                from.getColumns().getEnd(),
+                from.getColumns().getStart(),
+                from.getColumns().getEnd(),
                 to.getFile(),
                 to.getLines().getStart(),
-                to.getLines().getEnd());
-//                to.getColumns().getStart(),
-//                to.getColumns().getEnd());
+                to.getLines().getEnd(),
+                to.getColumns().getStart(),
+                to.getColumns().getEnd());
     }
 }

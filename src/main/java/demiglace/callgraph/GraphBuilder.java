@@ -194,26 +194,26 @@ public class GraphBuilder {
 
         int startLine = rmc.getExpression().getRange().get().begin.line;
         int endLine = rmc.getExpression().getRange().get().end.line;
-//        int startColumn = rmc.getExpression().getRange().get().begin.column;
-//        int endColumn = rmc.getExpression().getRange().get().end.column;
+        int startColumn = rmc.getExpression().getRange().get().begin.column;
+        int endColumn = rmc.getExpression().getRange().get().end.column;
         String file = qualifiedClassName.replace('.', '/') + ".java";
 
-        Region from = new Region(file, startLine, endLine);
-//        Region from = new Region(file, startLine, startColumn, endLine, endColumn);
+//        Region from = new Region(file, startLine, endLine);
+        Region from = new Region(file, startLine, startColumn, endLine, endColumn);
 
         if (rmc.getMethodDeclaration() != null && rmc.getMethodDeclaration().getRange().isPresent()) {
             startLine = rmc.getMethodDeclaration().getRange().get().begin.line;
             endLine = rmc.getMethodDeclaration().getRange().get().end.line;
-//            startColumn = rmc.getMethodDeclaration().getRange().get().begin.column;
-//            endColumn = rmc.getMethodDeclaration().getRange().get().end.column;
+            startColumn = rmc.getMethodDeclaration().getRange().get().begin.column;
+            endColumn = rmc.getMethodDeclaration().getRange().get().end.column;
 
             String[] qualifiedMethodName = rmc.getResolvedMethodDeclaration().getQualifiedName().split("\\.");
             String qualifiedName =
                     String.join("/", Arrays.copyOf(qualifiedMethodName, qualifiedMethodName.length - 1));
 
             file = qualifiedName + ".java";
-            Region to = new Region(file, startLine, endLine);
-//            Region to = new Region(file, startLine, startColumn, endLine, endColumn);
+//            Region to = new Region(file, startLine, endLine);
+            Region to = new Region(file, startLine, startColumn, endLine, endColumn);
 
             int value = 1;
 
