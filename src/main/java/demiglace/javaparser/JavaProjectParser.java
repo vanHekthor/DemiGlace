@@ -38,6 +38,8 @@ public class JavaProjectParser {
 
         for (SourceRoot sourceRoot : projectRoot.getSourceRoots()) {
             sourceRoot.getParserConfiguration().setAttributeComments(false); // Ignore comments
+            sourceRoot.getParserConfiguration().setTabSize(4);
+
 
             String classPath = sourceRoot.getRoot().toAbsolutePath() + "/"
                     + qualifiedClassName.replace('.', '/') + ".java";
@@ -84,6 +86,7 @@ public class JavaProjectParser {
 
         for (SourceRoot sourceRoot : projectRoot.getSourceRoots()) {
             sourceRoot.getParserConfiguration().setAttributeComments(false); // Ignore comments
+            sourceRoot.getParserConfiguration().setTabSize(4);
 
             JavaParser parser = new JavaParser(sourceRoot.getParserConfiguration());
 
@@ -139,6 +142,7 @@ public class JavaProjectParser {
 
         for (SourceRoot sourceRoot : projectRoot.getSourceRoots()) {
             sourceRoot.getParserConfiguration().setAttributeComments(false); // Ignore comments
+            sourceRoot.getParserConfiguration().setTabSize(4);
 
             try {
                parsingResult.addToMethodMap(collectMethodsInsideSourceRoot(sourceRoot));
