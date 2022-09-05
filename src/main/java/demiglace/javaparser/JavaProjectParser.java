@@ -233,7 +233,9 @@ public class JavaProjectParser {
 
                 if (methodCall.getScope().isPresent())
                     System.out.println("- [Method] " + methodCall.getScope().get() + "."
-                            + methodCall.getNameAsString() + " " + descriptor);
+                            + methodCall.getNameAsString() + " " + descriptor
+                            + " begin: " + methodCall.getRange().get().begin
+                            + " end: " + methodCall.getRange().get().end);
                 else
                     System.out.println("- [Method] " + methodCall.getNameAsString() + " " + descriptor);
 

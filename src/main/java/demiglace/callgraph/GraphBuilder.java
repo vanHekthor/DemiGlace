@@ -190,17 +190,24 @@ public class GraphBuilder {
 
     private CallGraphEdge createCallGraphEdge(String qualifiedClassName, ResolvedMethodCall rmc) {
         String type = "external method call";
-        String label = rmc.getScope() + "." + rmc.getName();
+        String label = !rmc.getScope().equals("") ? rmc.getScope() + "." + rmc.getName() : rmc.getName();
 
         int startLine = rmc.getExpression().getRange().get().begin.line;
         int endLine = rmc.getExpression().getRange().get().end.line;
-        int startColumn = rmc.getExpression().getRange().get().begin.column;
-        int endColumn = rmc.getExpression().getRange().get().end.column;
-        String file = qualifiedClassName.replace('.', '/') + ".java";
+
+        // javaparser gives you the start column starting from the scope, but here only start column
+        // of the actual method name is needed
+        // e.g. in System.out.println("something") the start column of "println" i.e. the column of 'p' is needed
+        // + 1 because without you would get the column of the '.' before the method name
+        int startColumn = rmc.getExpression().getRange().get().begin.column + rmc.getScope().length() + 1;
+        int endColumn = startColumn + rmc.getName().length() - 1;
+
+        String file = "src/" + qualifiedClassName.replace('.', '/') + ".java";
 
 //        Region from = new Region(file, startLine, endLine);
         Region from = new Region(file, startLine, startColumn, endLine, endColumn);
 
+        // handling location of the method declaration corresponding to the resolved method call
         if (rmc.getMethodDeclaration() != null && rmc.getMethodDeclaration().getRange().isPresent()) {
             startLine = rmc.getMethodDeclaration().getRange().get().begin.line;
             endLine = rmc.getMethodDeclaration().getRange().get().end.line;
@@ -211,7 +218,7 @@ public class GraphBuilder {
             String qualifiedName =
                     String.join("/", Arrays.copyOf(qualifiedMethodName, qualifiedMethodName.length - 1));
 
-            file = qualifiedName + ".java";
+            file = "src/" + qualifiedName + ".java";
 //            Region to = new Region(file, startLine, endLine);
             Region to = new Region(file, startLine, startColumn, endLine, endColumn);
 
