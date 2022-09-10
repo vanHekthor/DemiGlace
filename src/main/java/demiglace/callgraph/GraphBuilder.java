@@ -199,7 +199,12 @@ public class GraphBuilder {
         // of the actual method name is needed
         // e.g. in System.out.println("something") the start column of "println" i.e. the column of 'p' is needed
         // + 1 because without you would get the column of the '.' before the method name
-        int startColumn = rmc.getExpression().getRange().get().begin.column + rmc.getScope().length() + 1;
+        int startColumn = rmc.getExpression().getRange().get().begin.column;
+
+        if (!rmc.getScope().equals("")) {
+            startColumn += rmc.getScope().length() + 1;
+        }
+
         int endColumn = startColumn + rmc.getName().length() - 1;
 
         String file = "src/" + qualifiedClassName.replace('.', '/') + ".java";
