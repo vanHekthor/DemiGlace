@@ -229,7 +229,7 @@ public class GraphBuilder {
 
             int value = 1;
 
-            CallGraphEdge callGraphEdge = new CallGraphEdge(type, label, from, to, value);
+            CallGraphEdge callGraphEdge = new CallGraphEdge(type, label, rmc.getMethodDeclaration().getDeclarationAsString(), from, to, value);
             System.out.println(callGraphEdge);
             return callGraphEdge;
         }
