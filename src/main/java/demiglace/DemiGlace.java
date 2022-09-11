@@ -21,10 +21,10 @@ public class DemiGlace {
     public static Path PROJECT_PATH;
     public static void main(String[] args) {
         JavaProjectParser javaProjectParser = new JavaProjectParser();
-        PROJECT_PATH = Paths.get("C:\\Users\\Quoc Duong Bui\\Documents\\Arbeit\\WHK\\test_software\\catena-java");
+        PROJECT_PATH = Paths.get(openDirFileChooser().getPath());
         JavaParsingResult pr = javaProjectParser.parseProject(PROJECT_PATH);
 
-        Node node = new JProfilerParser().parseProfilerXML("C:\\Users\\Quoc Duong Bui\\Documents\\Arbeit\\WHK\\sopro-vr\\Tools\\control_flow\\profiler_data\\catena\\tree.xml");
+        Node node = new JProfilerParser().parseProfilerXML(openDirFileChooser().getPath());
 
         GraphBuilder graphBuilder = new GraphBuilder();
         HashSet<CallGraphEdge> edgeList = graphBuilder.generateCallGraphNodes(node, pr);

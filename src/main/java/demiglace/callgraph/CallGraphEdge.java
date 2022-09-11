@@ -5,13 +5,15 @@ import java.util.Objects;
 public class CallGraphEdge {
     private String type;
     private String label;
+    private String declaration;
     private Region from;
     private Region to;
     private int value;
 
-    public CallGraphEdge(String type, String label, Region from, Region to, int value) {
+    public CallGraphEdge(String type, String label, String declaration, Region from, Region to, int value) {
         this.type = type;
         this.label = label;
+        this.declaration = declaration;
         this.from = from;
         this.to = to;
         this.value = value;
@@ -22,6 +24,7 @@ public class CallGraphEdge {
         return "CallGraphEdge{" +
                 "type='" + type + '\'' +
                 ", label='" + label + '\'' +
+                ", declaration='" + declaration +
                 ", from=" + from +
                 ", to=" + to +
                 ", value=" + value +
