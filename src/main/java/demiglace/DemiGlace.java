@@ -11,6 +11,8 @@ import demiglace.profilerparser.JProfilerParser;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -21,6 +23,13 @@ public class DemiGlace {
     public static Path PROJECT_PATH;
     public static void main(String[] args) {
         JavaProjectParser javaProjectParser = new JavaProjectParser();
+
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        }catch(Exception ex) {
+            ex.printStackTrace();
+        }
+
         PROJECT_PATH = Paths.get(openDirFileChooser().getPath());
         JavaParsingResult pr = javaProjectParser.parseProject(PROJECT_PATH);
 
@@ -32,7 +41,15 @@ public class DemiGlace {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         ParsingResult parsingResult = new ParsingResult(edgeList);
-        System.out.println(gson.toJson(parsingResult));
+
+        String savePath = saveFileChooser().getPath();
+        try {
+            FileWriter fileWriter = new FileWriter(savePath);
+            gson.toJson(parsingResult, fileWriter);
+            fileWriter.flush();
+        } catch (IOException e) {
+            System.err.println("Unable to save call graph at path " + savePath + "!");
+        }
     }
 
     private static File openDirFileChooser() {
@@ -43,6 +60,20 @@ public class DemiGlace {
         fileChooser.setAcceptAllFileFilterUsed(false);
 
         if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
+            file = fileChooser.getSelectedFile();
+        }
+
+        return file;
+    }
+
+    private static File saveFileChooser() {
+        File file = null;
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setAcceptAllFileFilterUsed(false);
+
+        if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION){
             file = fileChooser.getSelectedFile();
         }
 
