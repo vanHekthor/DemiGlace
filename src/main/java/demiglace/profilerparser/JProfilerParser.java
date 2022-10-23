@@ -30,7 +30,7 @@ public class JProfilerParser {
 
             XPathFactory xPathfactory = XPathFactory.newInstance();
             XPath xpath = xPathfactory.newXPath();
-            XPathExpression expr = xpath.compile("//node[@class=\"main.java.Catena\"]");
+            XPathExpression expr = xpath.compile("//node[@class=\"main.java.Catena\" and @methodName=\"catena\"]");
             Node node = (Node) expr.evaluate(doc, XPathConstants.NODE);
 
             printTree(node, 0);
