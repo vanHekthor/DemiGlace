@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/35042166/222842115-cec7a020-5619-46dd-ae07-076658d963dc.png" alt="DemiGlace logo"><br/>
+    <img src="https://user-images.githubusercontent.com/35042166/222891304-7d72bffa-ef16-47b6-9b35-d01a04b5537a.png" alt="DemiGlace logo"><br/>
     Java Parsing Tool<br/>
 </p>
 
